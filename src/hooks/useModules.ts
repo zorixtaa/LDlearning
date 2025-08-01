@@ -9,15 +9,20 @@ export const useModules = () => {
 
   useEffect(() => {
     const load = async () => {
-      const snapshot = await getDocs(collection(db, 'modules'));
-      setModules(
-        snapshot.docs.map((d) => ({
-          id: d.id,
-          ...(d.data() as any),
-          lastUpdated: new Date((d.data() as any).lastUpdated),
-        }))
-      );
-      setLoading(false);
+      try {
+        const snapshot = await getDocs(collection(db, 'modules'));
+        setModules(
+          snapshot.docs.map((d) => ({
+            id: d.id,
+            ...(d.data() as Module),
+            lastUpdated: new Date((d.data() as { lastUpdated: string }).lastUpdated),
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to load modules', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     load();
