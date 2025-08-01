@@ -12,7 +12,11 @@ import { auth, db } from '../firebaseClient';
 
 interface AuthContextType {
   user: User | null;
-  login: (identifier: string, password: string) => Promise<boolean>;
+  login: (
+    identifier: string,
+    password: string,
+    role?: User['role']
+  ) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -59,7 +63,13 @@ export const useAuthProvider = () => {
       const stored = localStorage.getItem('educatrack_user');
       if (stored) {
         try {
-          setUser({ ...mapUser(current), ...JSON.parse(stored) });
+          const parsed = JSON.parse(stored) as User;
+          if (parsed.id === current.uid) {
+            setUser({ ...mapUser(current, parsed), ...parsed });
+          } else {
+            const mapped = mapUser(current);
+            setUser(mapped);
+          }
         } catch {
           const mapped = mapUser(current);
           setUser(mapped);
@@ -104,7 +114,11 @@ export const useAuthProvider = () => {
     };
   }, []);
 
-  const login = async (identifier: string, password: string): Promise<boolean> => {
+  const login = async (
+    identifier: string,
+    password: string,
+    role?: User['role']
+  ): Promise<boolean> => {
     setIsLoading(true);
     let email = identifier;
     if (!identifier.includes('@')) {
@@ -131,6 +145,9 @@ export const useAuthProvider = () => {
         // ignore profile errors
       }
       const mapped = mapUser(credential.user, profile);
+      if (role) {
+        mapped.role = role;
+      }
       setUser(mapped);
       localStorage.setItem('educatrack_user', JSON.stringify(mapped));
       setIsLoading(false);

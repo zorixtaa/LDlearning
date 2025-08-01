@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { LogIn, Truck, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import type { User } from '../types';
 
 export const LoginForm: React.FC = () => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [role, setRole] = useState<User['role']>('learner');
   const { login, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const success = await login(identifier, password);
+    const success = await login(identifier, password, role);
     if (!success) {
       setError('Invalid credentials');
     }
@@ -49,16 +51,33 @@ export const LoginForm: React.FC = () => {
             <label htmlFor="password" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 border border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 border border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="role" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+            Role
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value as User['role'])}
+            className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 border border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          >
+            <option value="superadmin">Super Admin</option>
+            <option value="admin">Admin</option>
+            <option value="trainer">Trainer</option>
+            <option value="learner">Learner</option>
+          </select>
+        </div>
 
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-300">
