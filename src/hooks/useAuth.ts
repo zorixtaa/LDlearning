@@ -6,7 +6,7 @@ import {
   signOut,
   getAuth,
 } from 'firebase/auth';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import type { User } from '../types';
 import { auth, db } from '../firebaseClient';
 
@@ -15,6 +15,14 @@ interface AuthContextType {
   login: (identifier: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+}
+
+interface ProfileData {
+  name?: string;
+  role?: User['role'];
+  department?: User['department'];
+  bio?: string;
+  isActive?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,31 +39,58 @@ export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const mapUser = (fbUser: FirebaseUser): User => ({
+  const mapUser = (fbUser: FirebaseUser, profile?: ProfileData): User => ({
     id: fbUser.uid,
     email: fbUser.email ?? '',
-    name: fbUser.displayName ?? fbUser.email ?? '',
-    role: 'learner',
-    bio: undefined,
+    name: profile?.name ?? fbUser.displayName ?? fbUser.email ?? '',
+    role: (profile?.role as User['role']) ?? 'learner',
+    department: profile?.department,
+    bio: profile?.bio,
     createdAt: fbUser.metadata?.creationTime
       ? new Date(fbUser.metadata.creationTime)
       : new Date(),
-    isActive: true,
+    isActive: profile?.isActive ?? true,
   });
 
   useEffect(() => {
     const authInstance = getAuth();
     const current = authInstance.currentUser;
     if (current) {
-      const mapped = mapUser(current);
-      setUser(mapped);
-      localStorage.setItem('educatrack_user', JSON.stringify(mapped));
+      const stored = localStorage.getItem('educatrack_user');
+      if (stored) {
+        try {
+          setUser({ ...mapUser(current), ...JSON.parse(stored) });
+        } catch {
+          const mapped = mapUser(current);
+          setUser(mapped);
+        }
+      } else {
+        const mapped = mapUser(current);
+        setUser(mapped);
+      }
+    } else {
+      const stored = localStorage.getItem('educatrack_user');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as User;
+          setUser(parsed);
+        } catch {
+          localStorage.removeItem('educatrack_user');
+        }
+      }
     }
     setIsLoading(false);
 
-    const unsubscribe = onAuthStateChanged(authInstance, (fbUser) => {
+    const unsubscribe = onAuthStateChanged(authInstance, async (fbUser) => {
       if (fbUser) {
-        const mapped = mapUser(fbUser);
+        let profile: ProfileData | undefined = undefined;
+        try {
+          const docSnap = await getDoc(doc(db, 'profiles', fbUser.uid));
+          if (docSnap.exists()) profile = docSnap.data() as ProfileData;
+        } catch {
+          // ignore profile errors
+        }
+        const mapped = mapUser(fbUser, profile);
         setUser(mapped);
         localStorage.setItem('educatrack_user', JSON.stringify(mapped));
       } else {
@@ -88,7 +123,14 @@ export const useAuthProvider = () => {
 
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      const mapped = mapUser(credential.user);
+      let profile: ProfileData | undefined = undefined;
+      try {
+        const docSnap = await getDoc(doc(db, 'profiles', credential.user.uid));
+        if (docSnap.exists()) profile = docSnap.data() as ProfileData;
+      } catch {
+        // ignore profile errors
+      }
+      const mapped = mapUser(credential.user, profile);
       setUser(mapped);
       localStorage.setItem('educatrack_user', JSON.stringify(mapped));
       setIsLoading(false);
