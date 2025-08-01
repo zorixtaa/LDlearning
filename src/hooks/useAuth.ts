@@ -1,7 +1,14 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { User as SupabaseUser } from '@supabase/supabase-js';
+import {
+  User as FirebaseUser,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  getAuth,
+} from 'firebase/auth';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { User } from '../types';
-import { supabase } from '../supabaseClient';
+import { auth, db } from '../firebaseClient';
 
 interface AuthContextType {
   user: User | null;
@@ -24,31 +31,31 @@ export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const mapUser = (sbUser: SupabaseUser): User => ({
-    id: sbUser.id,
-    email: sbUser.email ?? '',
-    name: (sbUser.user_metadata as any)?.name ?? sbUser.email ?? '',
-    role: (sbUser.user_metadata as any)?.role ?? 'learner',
-    bio: (sbUser.user_metadata as any)?.bio ?? undefined,
-    createdAt: new Date(sbUser.created_at),
+  const mapUser = (fbUser: FirebaseUser): User => ({
+    id: fbUser.uid,
+    email: fbUser.email ?? '',
+    name: fbUser.displayName ?? fbUser.email ?? '',
+    role: 'learner',
+    bio: undefined,
+    createdAt: fbUser.metadata?.creationTime
+      ? new Date(fbUser.metadata.creationTime)
+      : new Date(),
     isActive: true,
   });
 
   useEffect(() => {
-    const init = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
-        const mapped = mapUser(data.session.user);
-        setUser(mapped);
-        localStorage.setItem('educatrack_user', JSON.stringify(mapped));
-      }
-      setIsLoading(false);
-    };
-    init();
+    const authInstance = getAuth();
+    const current = authInstance.currentUser;
+    if (current) {
+      const mapped = mapUser(current);
+      setUser(mapped);
+      localStorage.setItem('educatrack_user', JSON.stringify(mapped));
+    }
+    setIsLoading(false);
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        const mapped = mapUser(session.user);
+    const unsubscribe = onAuthStateChanged(authInstance, (fbUser) => {
+      if (fbUser) {
+        const mapped = mapUser(fbUser);
         setUser(mapped);
         localStorage.setItem('educatrack_user', JSON.stringify(mapped));
       } else {
@@ -58,7 +65,7 @@ export const useAuthProvider = () => {
     });
 
     return () => {
-      listener.subscription.unsubscribe();
+      unsubscribe();
     };
   }, []);
 
@@ -66,32 +73,34 @@ export const useAuthProvider = () => {
     setIsLoading(true);
     let email = identifier;
     if (!identifier.includes('@')) {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('username', identifier)
-        .single();
-      if (profileError || !profile) {
+      const q = query(
+        collection(db, 'profiles'),
+        where('username', '==', identifier),
+        limit(1)
+      );
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
         setIsLoading(false);
         return false;
       }
-      email = profile.email;
+      email = snapshot.docs[0].data().email;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data.user) {
+    try {
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      const mapped = mapUser(credential.user);
+      setUser(mapped);
+      localStorage.setItem('educatrack_user', JSON.stringify(mapped));
+      setIsLoading(false);
+      return true;
+    } catch {
       setIsLoading(false);
       return false;
     }
-    const mapped = mapUser(data.user);
-    setUser(mapped);
-    localStorage.setItem('educatrack_user', JSON.stringify(mapped));
-    setIsLoading(false);
-    return true;
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    await signOut(auth);
     setUser(null);
     localStorage.removeItem('educatrack_user');
   };

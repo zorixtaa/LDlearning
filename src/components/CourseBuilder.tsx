@@ -9,7 +9,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { CourseBlock } from '../types';
-import { supabase } from '../supabaseClient';
+import { db } from '../firebaseClient';
+import { doc, setDoc } from 'firebase/firestore';
 
 interface BlockProps {
   block: CourseBlock;
@@ -42,7 +43,7 @@ export const CourseBuilder: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!selected) return;
-      supabase.rpc('save_builder_draft', { data: blocks }).catch(() => {});
+      setDoc(doc(db, 'drafts', 'builder'), { data: blocks }).catch(() => {});
     }, 5000);
     return () => clearInterval(interval);
   }, [blocks, selected]);
