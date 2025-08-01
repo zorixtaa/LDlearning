@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseClient';
 import type { Module } from '../types';
 
 export const useModules = () => {
@@ -8,13 +9,14 @@ export const useModules = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data, error } = await supabase.from('modules').select('*');
-      if (!error && data) {
-        setModules(data.map((m: any) => ({
-          ...m,
-          lastUpdated: new Date(m.lastUpdated),
-        })));
-      }
+      const snapshot = await getDocs(collection(db, 'modules'));
+      setModules(
+        snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as any),
+          lastUpdated: new Date((d.data() as any).lastUpdated),
+        }))
+      );
       setLoading(false);
     };
 
@@ -23,3 +25,4 @@ export const useModules = () => {
 
   return { modules, loading };
 };
+
