@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { Plus, Search, Filter, Edit, Trash2, Shield, UserCheck, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { User } from '../types';
 
 export const UserManagement: React.FC = () => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([
+    {
+      id: '0',
+      email: 'superadmin@lineaeducatrack.com',
+      name: 'Super Admin',
+      role: 'superadmin',
+      createdAt: new Date('2024-01-01'),
+      lastLogin: new Date(),
+      isActive: true,
+      mfaEnabled: true
+    },
     {
       id: '1',
       email: 'admin@lineaeducatrack.com',
@@ -95,6 +107,8 @@ export const UserManagement: React.FC = () => {
       email: user?.email || '',
       role: user?.role || 'learner',
       department: user?.department || 'General',
+      avatar: user?.avatar || '',
+      bio: user?.bio || '',
       isActive: user?.isActive ?? true
     });
 
@@ -153,15 +167,25 @@ export const UserManagement: React.FC = () => {
               </label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'trainer' | 'learner' }))}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    role: e.target.value as 'superadmin' | 'admin' | 'trainer' | 'learner'
+                  }))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
-                <option value="learner">Learner</option>
+                {currentUser.role === 'superadmin' && (
+                  <option value="superadmin">Super Admin</option>
+                )}
+                {currentUser.role === 'superadmin' && (
+                  <option value="admin">Administrador</option>
+                )}
                 <option value="trainer">Trainer</option>
-                <option value="admin">Administrador</option>
+                <option value="learner">Learner</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Departamento
@@ -177,6 +201,33 @@ export const UserManagement: React.FC = () => {
                 <option value="Tautliner">Tautliner</option>
                 <option value="Customs">Customs</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setFormData(prev => ({ ...prev, avatar: reader.result as string }));
+                  };
+                  reader.readAsDataURL(file);
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+              <textarea
+                value={formData.bio}
+                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
             
             <div className="flex items-center">
@@ -253,6 +304,7 @@ export const UserManagement: React.FC = () => {
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Todos los roles</option>
+              <option value="superadmin">Super Admins</option>
               <option value="admin">Administradores</option>
               <option value="trainer">Trainers</option>
               <option value="learner">Learners</option>

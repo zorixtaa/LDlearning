@@ -2,9 +2,10 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'trainer' | 'learner';
+  role: 'superadmin' | 'admin' | 'trainer' | 'learner';
   department?: 'Frigo' | 'Tautliner' | 'Trucking' | 'Customs' | 'General';
   avatar?: string;
+  bio?: string;
   createdAt: Date;
   lastLogin?: Date;
   isActive: boolean;

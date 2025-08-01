@@ -11,10 +11,13 @@ export const LoginForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     const success = await login(email, password);
     if (!success) {
       setError('Invalid credentials');
+    } else {
+      // Reload to render the authenticated dashboard
+      window.location.href = '/';
     }
   };
 
@@ -80,15 +83,6 @@ export const LoginForm: React.FC = () => {
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
-
-        <div className="mt-8 p-4 bg-blue-900/30 border border-blue-700 rounded-lg">
-          <h3 className="font-medium text-blue-300 mb-2">Demo Credentials:</h3>
-          <div className="text-sm text-blue-400 space-y-1">
-            <p><strong>Admin:</strong> admin@lineaeducatrack.com / demo123</p>
-            <p><strong>Trainer:</strong> trainer@lineaeducatrack.com / demo123</p>
-            <p><strong>Learner:</strong> learner@lineaeducatrack.com / demo123</p>
-          </div>
-        </div>
       </div>
     </div>
   );
