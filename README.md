@@ -31,10 +31,8 @@ Users can log in as **admin**, **trainer** or **learner**. Navigation options ad
 
 ## Credentials
 
-The default superadmin credentials for local development are:
 
 ```
-username: zorino
-password: diagonalinea123
+
 ```
 
