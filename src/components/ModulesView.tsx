@@ -4,34 +4,34 @@ import { ModuleCard } from './ModuleCard';
 import { modules as staticModules } from '../data/modules';
 import { useAuth } from '../hooks/useAuth';
 import { useModules } from '../hooks/useModules';
+import { useProgress } from '../hooks/useProgress';
+import type { Module } from '../types';
 
 export const ModulesView: React.FC = () => {
   const { user } = useAuth();
   const { modules } = useModules();
+  const { progress, startModule } = useProgress();
   const allModules = modules.length > 0 ? modules : staticModules;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
-  // Mock progress data
-  const userProgress = [
-    { userId: '2', moduleId: 'basic-transport', status: 'completed' as const, score: 92, timeSpent: 45, attempts: 1, completedAt: new Date('2024-12-15') },
-    { userId: '2', moduleId: 'direct-loads', status: 'completed' as const, score: 88, timeSpent: 58, attempts: 1, completedAt: new Date('2024-12-16') },
-    { userId: '2', moduleId: 'trucking-romper', status: 'in_progress' as const, score: undefined, timeSpent: 35, attempts: 1 },
-  ];
 
   const handleStartModule = (moduleId: string) => {
+    if (user?.role === 'learner') {
+      startModule(moduleId);
+    }
     console.log('Starting module:', moduleId);
   };
 
   const getModuleProgress = (moduleId: string) => {
-    return userProgress.find(p => p.moduleId === moduleId);
+    return progress.find(p => p.moduleId === moduleId);
   };
 
-  const isModuleDisabled = (module: any) => {
+  const isModuleDisabled = (module: Module) => {
     if (!module.prerequisites?.length) return false;
     return !module.prerequisites.every(prereq => 
-      userProgress.some(p => p.moduleId === prereq && p.status === 'completed')
+      progress.some(p => p.moduleId === prereq && p.status === 'completed')
     );
   };
 
@@ -53,9 +53,9 @@ export const ModulesView: React.FC = () => {
 
   const stats = {
     total: allModules.length,
-    completed: userProgress.filter(p => p.status === 'completed').length,
-    inProgress: userProgress.filter(p => p.status === 'in_progress').length,
-    notStarted: allModules.length - userProgress.length
+    completed: progress.filter(p => p.status === 'completed').length,
+    inProgress: progress.filter(p => p.status === 'in_progress').length,
+    notStarted: allModules.length - progress.length
   };
 
   return (

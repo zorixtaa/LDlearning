@@ -2,40 +2,38 @@ import React from 'react';
 import { BookOpen, Award, Clock, TrendingUp, Target, Calendar } from 'lucide-react';
 import { ModuleCard } from './ModuleCard';
 import { modules } from '../data/modules';
+import { useProgress } from '../hooks/useProgress';
+import type { Module } from '../types';
 
 export const LearnerDashboard: React.FC = () => {
-  // Mock progress data
-  const userProgress = [
-    { userId: '2', moduleId: 'basic-transport', status: 'completed' as const, score: 92, timeSpent: 45, attempts: 1, completedAt: new Date('2024-12-15') },
-    { userId: '2', moduleId: 'direct-loads', status: 'completed' as const, score: 88, timeSpent: 58, attempts: 1, completedAt: new Date('2024-12-16') },
-    { userId: '2', moduleId: 'trucking-romper', status: 'in_progress' as const, score: undefined, timeSpent: 35, attempts: 1 },
-  ];
+  const { progress, startModule } = useProgress();
 
+  const completed = progress.filter(p => p.status === 'completed');
   const stats = [
     {
       title: 'Modules Completed',
-      value: '2/8',
-      description: '25% Complete',
+      value: `${completed.length}/${modules.length}`,
+      description: `${Math.round((completed.length / modules.length) * 100) || 0}% Complete`,
       icon: BookOpen,
       color: 'bg-blue-100 text-blue-600'
     },
     {
       title: 'Average Score',
-      value: '90%',
-      description: 'Above target',
+      value: completed.length ? `${Math.round(completed.reduce((a, c) => a + (c.score || 0), 0) / completed.length)}%` : '0%',
+      description: 'Average of passed modules',
       icon: Target,
       color: 'bg-green-100 text-green-600'
     },
     {
       title: 'Time Invested',
-      value: '2.3h',
-      description: 'This week',
+      value: `${(progress.reduce((a, c) => a + c.timeSpent, 0) / 60).toFixed(1)}h`,
+      description: 'Total time',
       icon: Clock,
       color: 'bg-purple-100 text-purple-600'
     },
     {
       title: 'Certificates',
-      value: '2',
+      value: completed.filter(p => p.certificateId).length.toString(),
       description: 'Active certificates',
       icon: Award,
       color: 'bg-yellow-100 text-yellow-600'
@@ -49,17 +47,18 @@ export const LearnerDashboard: React.FC = () => {
   ];
 
   const handleStartModule = (moduleId: string) => {
+    startModule(moduleId);
     console.log('Starting module:', moduleId);
   };
 
   const getModuleProgress = (moduleId: string) => {
-    return userProgress.find(p => p.moduleId === moduleId);
+    return progress.find(p => p.moduleId === moduleId);
   };
 
-  const isModuleDisabled = (module: any) => {
+  const isModuleDisabled = (module: Module) => {
     if (!module.prerequisites?.length) return false;
-    return !module.prerequisites.every(prereq => 
-      userProgress.some(p => p.moduleId === prereq && p.status === 'completed')
+    return !module.prerequisites.every(prereq =>
+      progress.some(p => p.moduleId === prereq && p.status === 'completed')
     );
   };
 
