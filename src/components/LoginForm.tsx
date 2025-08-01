@@ -3,7 +3,7 @@ import { LogIn, Truck, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
@@ -12,7 +12,7 @@ export const LoginForm: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    const success = await login(email, password);
+    const success = await login(identifier, password);
     if (!success) {
       setError('Invalid credentials');
     } else {
@@ -34,16 +34,16 @@ export const LoginForm: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-              Email Address
+            <label htmlFor="identifier" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+              Email or Username
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-700 border border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
               required
             />
           </div>
