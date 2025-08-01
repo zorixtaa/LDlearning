@@ -12,16 +12,7 @@ Users can log in as **admin**, **trainer** or **learner**. Navigation options ad
    ```bash
    npm install
    ```
-2. Copy `.env.example` to `.env`. The example file already contains demo
-   Firebase credentials you can use:
-   ```
-   VITE_FIREBASE_API_KEY=AIzaSyCnCx-swPIRKplcNgMU_S1U82OkOwpLs1w
-   VITE_FIREBASE_AUTH_DOMAIN=ldlearning-eda8f.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=ldlearning-eda8f
-   VITE_FIREBASE_STORAGE_BUCKET=ldlearning-eda8f.firebasestorage.app
-   VITE_FIREBASE_MESSAGING_SENDER_ID=780982601608
-   VITE_FIREBASE_APP_ID=1:780982601608:web:7b73593b5d350d1cd21c3d
-   VITE_FIREBASE_MEASUREMENT_ID=G-75ERG1069D
+
    ```
 3. Start the development server:
    ```bash
