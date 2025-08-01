@@ -29,6 +29,7 @@ export const useAuthProvider = () => {
     email: sbUser.email ?? '',
     name: (sbUser.user_metadata as any)?.name ?? sbUser.email ?? '',
     role: (sbUser.user_metadata as any)?.role ?? 'learner',
+    bio: (sbUser.user_metadata as any)?.bio ?? undefined,
     createdAt: new Date(sbUser.created_at),
     isActive: true,
   });

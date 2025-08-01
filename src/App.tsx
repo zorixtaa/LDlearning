@@ -98,7 +98,7 @@ const AppContent: React.FC = () => {
   }
 
   const renderContent = () => {
-    if (user.role === 'admin') {
+    if (user.role === 'superadmin' || user.role === 'admin') {
       switch (activeTab) {
         case 'dashboard':
           return <AdminDashboard />;
