@@ -13,10 +13,13 @@ import { QuizSystem } from './components/QuizSystem';
 import { CertificateGenerator } from './components/CertificateGenerator';
 import { AIConfigurationPanel } from './components/AIConfigurationPanel';
 import { useAuth } from './hooks/useAuth';
-import { modules } from './data/modules';
+import { modules as staticModules } from './data/modules';
+import { useModules } from './hooks/useModules';
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
+  const { modules } = useModules();
+  const allModules = modules.length > 0 ? modules : staticModules;
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showQuiz, setShowQuiz] = useState<string | null>(null);
   const [showCertificate, setShowCertificate] = useState<any>(null);
@@ -44,7 +47,7 @@ const AppContent: React.FC = () => {
           console.log('Quiz completed:', { score, timeSpent });
           // Generate certificate if score is passing
           if (score >= 70) {
-            const module = modules.find(m => m.id === showQuiz);
+            const module = allModules.find(m => m.id === showQuiz);
             if (module) {
               const certificate = {
                 id: Date.now().toString(),

@@ -1,5 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import type { User } from '../types';
+import { supabase } from '../supabaseClient';
 
 interface AuthContextType {
   user: User | null;
@@ -22,53 +24,59 @@ export const useAuthProvider = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const mapUser = (sbUser: SupabaseUser): User => ({
+    id: sbUser.id,
+    email: sbUser.email ?? '',
+    name: (sbUser.user_metadata as any)?.name ?? sbUser.email ?? '',
+    role: (sbUser.user_metadata as any)?.role ?? 'candidate',
+    createdAt: new Date(sbUser.created_at),
+    isActive: true,
+  });
+
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('educatrack_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        const mapped = mapUser(data.session.user);
+        setUser(mapped);
+        localStorage.setItem('educatrack_user', JSON.stringify(mapped));
+      }
+      setIsLoading(false);
+    };
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const mapped = mapUser(session.user);
+        setUser(mapped);
+        localStorage.setItem('educatrack_user', JSON.stringify(mapped));
+      } else {
+        setUser(null);
+        localStorage.removeItem('educatrack_user');
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
-    // Mock authentication - in production, this would be a real API call
-    const mockUsers: User[] = [
-      {
-        id: '1',
-        email: 'admin@lineaeducatrack.com',
-        name: 'Administrator',
-        role: 'admin',
-        createdAt: new Date('2024-01-01'),
-        lastLogin: new Date()
-      },
-      {
-        id: '2',
-        email: 'candidate@lineaeducatrack.com',
-        name: 'Juan Pérez',
-        role: 'candidate',
-        department: 'Trucking',
-        createdAt: new Date('2024-01-15'),
-        lastLogin: new Date()
-      }
-    ];
-
-    const foundUser = mockUsers.find(u => u.email === email);
-    
-    if (foundUser && password === 'demo123') {
-      setUser(foundUser);
-      localStorage.setItem('educatrack_user', JSON.stringify(foundUser));
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) {
       setIsLoading(false);
-      return true;
+      return false;
     }
-    
+    const mapped = mapUser(data.user);
+    setUser(mapped);
+    localStorage.setItem('educatrack_user', JSON.stringify(mapped));
     setIsLoading(false);
-    return false;
+    return true;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('educatrack_user');
   };

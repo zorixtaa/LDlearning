@@ -14,7 +14,7 @@ export const LoginForm: React.FC = () => {
     
     const success = await login(email, password);
     if (!success) {
-      setError('Invalid credentials. Try admin@lineaeducatrack.com / demo123');
+      setError('Invalid credentials');
     }
   };
 

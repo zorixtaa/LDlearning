@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Search, Filter, BookOpen, Clock, Award } from 'lucide-react';
 import { ModuleCard } from './ModuleCard';
-import { modules } from '../data/modules';
+import { modules as staticModules } from '../data/modules';
 import { useAuth } from '../hooks/useAuth';
+import { useModules } from '../hooks/useModules';
 
 export const ModulesView: React.FC = () => {
   const { user } = useAuth();
+  const { modules } = useModules();
+  const allModules = modules.length > 0 ? modules : staticModules;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -32,7 +35,7 @@ export const ModulesView: React.FC = () => {
     );
   };
 
-  const filteredModules = modules.filter(module => {
+  const filteredModules = allModules.filter(module => {
     const matchesSearch = module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          module.description.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -49,10 +52,10 @@ export const ModulesView: React.FC = () => {
   });
 
   const stats = {
-    total: modules.length,
+    total: allModules.length,
     completed: userProgress.filter(p => p.status === 'completed').length,
     inProgress: userProgress.filter(p => p.status === 'in_progress').length,
-    notStarted: modules.length - userProgress.length
+    notStarted: allModules.length - userProgress.length
   };
 
   return (
