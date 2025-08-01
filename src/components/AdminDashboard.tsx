@@ -54,7 +54,7 @@ export const AdminDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Monitor training progress and manage the platform</p>
+          <p className="text-gray-500 dark:text-gray-400">Monitor training progress and manage the platform</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-2 bg-green-100 text-green-800 rounded-lg">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -67,9 +67,9 @@ export const AdminDashboard: React.FC = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+            <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-900 rounded-lg">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
                   <Icon className="h-5 w-5 text-blue-600" />
                 </div>
                 <span className={`text-sm font-medium ${
@@ -79,8 +79,8 @@ export const AdminDashboard: React.FC = () => {
                 </span>
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-100">{stat.value}</p>
-                <p className="text-sm text-gray-400">{stat.title}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.title}</p>
               </div>
             </div>
           );
@@ -89,9 +89,9 @@ export const AdminDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activities */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-100">Recent Activities</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Activities</h2>
             <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
               View All
             </button>
@@ -102,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
               <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-700 rounded-lg transition-colors">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-100">{activity.user}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{activity.user}</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       activity.action === 'Completed' 
                         ? 'bg-green-100 text-green-800'
@@ -113,12 +113,12 @@ export const AdminDashboard: React.FC = () => {
                       {activity.action}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-400">{activity.module}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{activity.module}</p>
                   <p className="text-xs text-gray-500">{activity.time}</p>
                 </div>
                 {activity.score && (
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-100">{activity.score}%</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.score}%</p>
                   </div>
                 )}
               </div>
@@ -127,9 +127,9 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Department Progress */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-100">Department Progress</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Department Progress</h2>
             <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
               Export Report
             </button>
@@ -139,8 +139,8 @@ export const AdminDashboard: React.FC = () => {
             {departmentProgress.map((dept, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-gray-100">{dept.name}</span>
-                  <span className="text-sm text-gray-400">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{dept.name}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     {dept.completed}/{dept.total} ({dept.percentage}%)
                   </span>
                 </div>
@@ -157,20 +157,20 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-100 mb-4">Quick Actions</h2>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
-            <h3 className="font-medium text-gray-100 mb-1">Export Audit Log</h3>
-            <p className="text-sm text-gray-400">Download compliance documentation</p>
+          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
+            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Export Audit Log</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Download compliance documentation</p>
           </button>
-          <button className="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
-            <h3 className="font-medium text-gray-100 mb-1">Send Reminders</h3>
-            <p className="text-sm text-gray-400">Notify pending training candidates</p>
+          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
+            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Send Reminders</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Notify pending training candidates</p>
           </button>
-          <button className="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
-            <h3 className="font-medium text-gray-100 mb-1">Update Modules</h3>
-            <p className="text-sm text-gray-400">Refresh training content</p>
+          <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
+            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Update Modules</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Refresh training content</p>
           </button>
         </div>
       </div>
