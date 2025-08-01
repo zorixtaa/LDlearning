@@ -14,7 +14,8 @@ Users can log in as **admin**, **trainer** or **learner**. Navigation options ad
    ```
 2. Create a `.env` file based on `.env.example` and fill in your Supabase credentials:
    ```
-   SUPABASE_KEY=<your-anon-key>
+   VITE_SUPABASE_URL=<your-project-url>
+   VITE_SUPABASE_KEY=<your-anon-key>
    ```
 3. Start the development server:
    ```bash
@@ -27,4 +28,13 @@ Users can log in as **admin**, **trainer** or **learner**. Navigation options ad
 - `npm run build` – build for production
 - `npm run preview` – preview the production build
 - `npm run lint` – run ESLint
+
+## Credentials
+
+The default superadmin credentials for local development are:
+
+```
+username: zorino
+password: diagonalinea123
+```
 

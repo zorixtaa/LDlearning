@@ -3,8 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-surface-0: #FFFFFF;
+    --color-surface-100: #F8FAFC;
+    --color-accent-500: #3B82F6;
+    --color-accent-600: #2563EB;
+    --color-success-500: #22C55E;
+    --color-danger-500: #EF4444;
+  }
+
+  :root.dark {
+    --color-surface-0: #0D0D0D;
+    --color-surface-100: #1A1A1A;
+    --color-accent-500: #60A5FA;
+    --color-accent-600: #60A5FA;
+    --color-success-500: #4ADE80;
+    --color-danger-500: #F87171;
+  }
   html {
     color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   html.dark {
@@ -12,10 +30,22 @@
   }
 
   body {
-    @apply bg-gray-100 text-gray-900;
+    @apply bg-surface-100 text-gray-900 font-sans antialiased;
   }
 
   html.dark body {
-    @apply bg-gray-900 text-gray-100;
+    @apply bg-surface-100 text-gray-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  .skip-link {
+    @apply absolute left-[-999px] top-auto w-px h-px overflow-hidden;
+  }
+
+  .skip-link:focus {
+    @apply left-4 top-4 w-auto h-auto p-2 rounded-md z-50 bg-surface-0;
   }
 }
