@@ -12,7 +12,9 @@ Users can log in as **admin**, **trainer** or **learner**. Navigation options ad
    ```bash
    npm install
    ```
-
+2. Copy `credentials.env` to `.env` and ensure the Firebase values match your project:
+   ```bash
+   cp credentials.env .env
    ```
 3. Start the development server:
    ```bash
