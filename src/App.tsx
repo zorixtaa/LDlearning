@@ -18,6 +18,7 @@ import { useAuth } from './hooks/useAuth';
 import { modules as staticModules } from './data/modules';
 import { useTheme } from './hooks/useTheme';
 import { useModules } from './hooks/useModules';
+import { ProgressProvider } from './hooks/useProgress';
 
 const AppContent: React.FC = () => {
   useTheme();
@@ -172,7 +173,9 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ProgressProvider>
+        <AppContent />
+      </ProgressProvider>
     </AuthProvider>
   );
 }
