@@ -19,7 +19,7 @@ export const UserManagement: React.FC = () => {
       id: '2',
       email: 'juan.perez@lineaeducatrack.com',
       name: 'Juan Pérez',
-      role: 'candidate',
+      role: 'learner',
       department: 'Trucking',
       createdAt: new Date('2024-01-15'),
       lastLogin: new Date('2024-12-15'),
@@ -30,7 +30,7 @@ export const UserManagement: React.FC = () => {
       id: '3',
       email: 'maria.garcia@lineaeducatrack.com',
       name: 'María García',
-      role: 'candidate',
+      role: 'learner',
       department: 'Frigo',
       createdAt: new Date('2024-02-01'),
       lastLogin: new Date('2024-12-14'),
@@ -41,7 +41,7 @@ export const UserManagement: React.FC = () => {
       id: '4',
       email: 'carlos.lopez@lineaeducatrack.com',
       name: 'Carlos López',
-      role: 'candidate',
+      role: 'learner',
       department: 'Customs',
       createdAt: new Date('2024-02-15'),
       lastLogin: new Date('2024-12-10'),
@@ -93,7 +93,7 @@ export const UserManagement: React.FC = () => {
     const [formData, setFormData] = useState({
       name: user?.name || '',
       email: user?.email || '',
-      role: user?.role || 'candidate',
+      role: user?.role || 'learner',
       department: user?.department || 'General',
       isActive: user?.isActive ?? true
     });
@@ -153,10 +153,11 @@ export const UserManagement: React.FC = () => {
               </label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'candidate' }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'trainer' | 'learner' }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
-                <option value="candidate">Candidato</option>
+                <option value="learner">Learner</option>
+                <option value="trainer">Trainer</option>
                 <option value="admin">Administrador</option>
               </select>
             </div>
@@ -253,7 +254,8 @@ export const UserManagement: React.FC = () => {
             >
               <option value="all">Todos los roles</option>
               <option value="admin">Administradores</option>
-              <option value="candidate">Candidatos</option>
+              <option value="trainer">Trainers</option>
+              <option value="learner">Learners</option>
             </select>
 
             <select

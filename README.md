@@ -2,6 +2,10 @@
 
 This project is a learning platform built with React and Vite. Authentication and data storage are handled by [Supabase](https://supabase.com/).
 
+## Roles
+
+Users can log in as **admin**, **trainer** or **learner**. Navigation options adapt to the current role. Trainers and admins have access to the new course builder interface.
+
 ## Setup
 
 1. Install dependencies:

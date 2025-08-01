@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'candidate';
+  role: 'admin' | 'trainer' | 'learner';
   department?: 'Frigo' | 'Tautliner' | 'Trucking' | 'Customs' | 'General';
   avatar?: string;
   createdAt: Date;
@@ -26,6 +26,14 @@ export interface Module {
   isActive: boolean;
   requiredScore: number;
   maxAttempts: number;
+}
+
+export interface CourseBlock {
+  id: string;
+  type: 'lesson' | 'video' | 'pdf' | 'external' | 'quiz' | 'section';
+  title: string;
+  description?: string;
+  resource?: string;
 }
 
 export interface Progress {

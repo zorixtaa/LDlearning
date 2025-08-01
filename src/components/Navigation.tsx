@@ -8,7 +8,8 @@ import {
   BarChart3,
   LogOut,
   Truck,
-  Bot
+  Bot,
+  LayoutList
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeToggle } from './ThemeToggle';
@@ -30,14 +31,24 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
-  const candidateTabs = [
+  const learnerTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'modules', label: 'My Modules', icon: BookOpen },
     { id: 'certificates', label: 'Certificates', icon: Award },
     { id: 'profile', label: 'Profile', icon: Settings }
   ];
 
-  const tabs = user?.role === 'admin' ? adminTabs : candidateTabs;
+  const trainerTabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'modules', label: 'Modules', icon: BookOpen },
+    { id: 'builder', label: 'Builder', icon: LayoutList }
+  ];
+
+  const tabs = user?.role === 'admin'
+    ? adminTabs
+    : user?.role === 'trainer'
+    ? trainerTabs
+    : learnerTabs;
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">

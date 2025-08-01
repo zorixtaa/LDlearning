@@ -74,7 +74,7 @@ export const ModulesView: React.FC = () => {
       </div>
 
       {/* Stats */}
-      {user?.role === 'candidate' && (
+      {user?.role === 'learner' && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2 mb-2">
@@ -135,7 +135,7 @@ export const ModulesView: React.FC = () => {
               <option value="Advanced">Advanced</option>
             </select>
 
-            {user?.role === 'candidate' && (
+            {user?.role === 'learner' && (
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
@@ -158,9 +158,9 @@ export const ModulesView: React.FC = () => {
           <ModuleCard
             key={module.id}
             module={module}
-            progress={user?.role === 'candidate' ? getModuleProgress(module.id) : undefined}
+            progress={user?.role === 'learner' ? getModuleProgress(module.id) : undefined}
             onStart={handleStartModule}
-            disabled={user?.role === 'candidate' ? isModuleDisabled(module) : false}
+            disabled={user?.role === 'learner' ? isModuleDisabled(module) : false}
           />
         ))}
       </div>

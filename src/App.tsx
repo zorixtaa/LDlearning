@@ -4,7 +4,9 @@ import { AuthProvider } from './components/AuthProvider';
 import { LoginForm } from './components/LoginForm';
 import { Navigation } from './components/Navigation';
 import { AdminDashboard } from './components/AdminDashboard';
-import { CandidateDashboard } from './components/CandidateDashboard';
+import { LearnerDashboard } from './components/LearnerDashboard';
+import { TrainerDashboard } from './components/TrainerDashboard';
+import { CourseBuilder } from './components/CourseBuilder';
 import { ModulesView } from './components/ModulesView';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { UserManagement } from './components/UserManagement';
@@ -107,6 +109,8 @@ const AppContent: React.FC = () => {
           return <AnalyticsDashboard />;
         case 'ai-config':
           return <AIConfigurationPanel />;
+        case 'builder':
+          return <CourseBuilder />;
         case 'settings':
           return (
             <div className="bg-gray-800 p-8 rounded-lg border border-gray-700">
@@ -117,10 +121,21 @@ const AppContent: React.FC = () => {
         default:
           return <AdminDashboard />;
       }
+    } else if (user.role === 'trainer') {
+      switch (activeTab) {
+        case 'dashboard':
+          return <TrainerDashboard />;
+        case 'modules':
+          return <ModulesView />;
+        case 'builder':
+          return <CourseBuilder />;
+        default:
+          return <TrainerDashboard />;
+      }
     } else {
       switch (activeTab) {
         case 'dashboard':
-          return <CandidateDashboard />;
+          return <LearnerDashboard />;
         case 'modules':
           return <ModulesView />;
         case 'certificates':
@@ -138,7 +153,7 @@ const AppContent: React.FC = () => {
             </div>
           );
         default:
-          return <CandidateDashboard />;
+          return <LearnerDashboard />;
       }
     }
   };

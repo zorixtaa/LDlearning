@@ -166,7 +166,7 @@ export const AdminDashboard: React.FC = () => {
           </button>
           <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
             <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Send Reminders</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Notify pending training candidates</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Notify pending training learners</p>
           </button>
           <button className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-700 transition-colors text-left">
             <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Update Modules</h3>
