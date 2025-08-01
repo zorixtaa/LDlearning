@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LogIn, Truck, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import type { User } from '../types';
 
@@ -9,6 +10,7 @@ export const LoginForm: React.FC = () => {
   const [error, setError] = useState('');
   const [role, setRole] = useState<User['role']>('learner');
   const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +19,8 @@ export const LoginForm: React.FC = () => {
     const success = await login(identifier, password, role);
     if (!success) {
       setError('Invalid credentials');
+    } else {
+      navigate('/', { replace: true });
     }
   };
 
