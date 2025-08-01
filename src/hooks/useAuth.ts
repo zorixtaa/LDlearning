@@ -5,7 +5,7 @@ import { supabase } from '../supabaseClient';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (identifier: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -62,8 +62,22 @@ export const useAuthProvider = () => {
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (identifier: string, password: string): Promise<boolean> => {
     setIsLoading(true);
+    let email = identifier;
+    if (!identifier.includes('@')) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('username', identifier)
+        .single();
+      if (profileError || !profile) {
+        setIsLoading(false);
+        return false;
+      }
+      email = profile.email;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error || !data.user) {
       setIsLoading(false);
