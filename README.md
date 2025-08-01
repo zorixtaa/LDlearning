@@ -4,7 +4,7 @@ This project is a learning platform built with React and Vite. Authentication an
 
 ## Roles
 
-Users can log in as **admin**, **trainer** or **learner**. Navigation options adapt to the current role. Trainers and admins have access to the new course builder interface.
+Users can log in as **admin**, **trainer** or **learner**. Navigation options adapt to the current role. Trainers and admins have access to the new course builder interface. For testing, the login page now includes a role selector so you can choose the desired role before signing in. A demo super admin account is available with the username **zorino** and password **demo123**.
 
 ## Setup
 
