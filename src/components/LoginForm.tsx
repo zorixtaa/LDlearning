@@ -15,9 +15,6 @@ export const LoginForm: React.FC = () => {
     const success = await login(identifier, password);
     if (!success) {
       setError('Invalid credentials');
-    } else {
-      // Reload to render the authenticated dashboard
-      window.location.href = '/';
     }
   };
 
