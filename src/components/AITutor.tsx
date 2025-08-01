@@ -97,6 +97,74 @@ export const AITutor: React.FC = () => {
     return 'general';
   };
 
+  const fetchAIResponse = async (message: string, config: Record<string, unknown>): Promise<string> => {
+    try {
+      let url = '';
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      let body: Record<string, unknown> = {};
+
+      if (config.provider === 'openai') {
+        url = `${config.baseUrl}/chat/completions`;
+        headers['Authorization'] = `Bearer ${config.apiKey}`;
+        body = {
+          model: config.model,
+          messages: [
+            { role: 'system', content: config.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: config.temperature,
+          max_tokens: config.maxTokens
+        };
+      } else if (config.provider === 'anthropic') {
+        url = `${config.baseUrl}/messages`;
+        headers['x-api-key'] = config.apiKey;
+        body = {
+          model: config.model,
+          max_tokens: config.maxTokens,
+          messages: [{ role: 'user', content: `${config.systemPrompt}\n\n${message}` }],
+          temperature: config.temperature
+        };
+      } else if (config.provider === 'azure') {
+        url = `${config.baseUrl}/openai/deployments/${config.model}/chat/completions?api-version=2024-02-15-preview`;
+        headers['api-key'] = config.apiKey;
+        body = {
+          messages: [
+            { role: 'system', content: config.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: config.temperature,
+          max_tokens: config.maxTokens
+        };
+      } else {
+        url = `${config.baseUrl}/chat`;
+        if (config.apiKey) headers['Authorization'] = `Bearer ${config.apiKey}`;
+        body = {
+          model: config.model,
+          messages: [
+            { role: 'system', content: config.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: config.temperature,
+          max_tokens: config.maxTokens
+        };
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      return (
+        data.choices?.[0]?.message?.content ||
+        data.content ||
+        ''
+      ).trim();
+    } catch {
+      return '';
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -114,44 +182,29 @@ export const AITutor: React.FC = () => {
     // Check if AI is configured and enabled
     if (aiConfig?.enabled && aiConfig?.apiKey) {
       try {
-        // In a real implementation, this would call the configured AI API
-        // For now, we'll simulate an enhanced AI response
-        setTimeout(() => {
-          const enhancedResponse = getEnhancedAIResponse(inputMessage, aiConfig);
+        const enhanced = await fetchAIResponse(inputMessage, aiConfig);
+        if (enhanced) {
           const botMessage: Message = {
             id: (Date.now() + 1).toString(),
             type: 'bot',
-            content: enhancedResponse,
+            content: enhanced,
             timestamp: new Date(),
             moduleContext: getResponseCategory(inputMessage)
           };
           setMessages(prev => [...prev, botMessage]);
           setIsTyping(false);
-        }, 2000);
-      } catch (error) {
-        // Fallback to default responses
-        setTimeout(() => {
-          const category = getResponseCategory(inputMessage);
-          const responses = diegoResponses[category];
-          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-          const botMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            type: 'bot',
-            content: randomResponse,
-            timestamp: new Date(),
-            moduleContext: category
-          };
-          setMessages(prev => [...prev, botMessage]);
-          setIsTyping(false);
-        }, 1500);
+          return;
+        }
+      } catch {
+        // ignore and fall back
       }
-    } else {
-      // Use default responses when AI is not configured
-      setTimeout(() => {
+    }
+
+    // Default responses if AI not configured or request failed
+    setTimeout(() => {
       const category = getResponseCategory(inputMessage);
       const responses = diegoResponses[category];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
@@ -159,29 +212,11 @@ export const AITutor: React.FC = () => {
         timestamp: new Date(),
         moduleContext: category
       };
-
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
-      }, 1500);
-    }
+    }, 1500);
   };
 
-  const getEnhancedAIResponse = (message: string, config: any): string => {
-    // This would integrate with the configured AI service
-    // For demo purposes, we'll return enhanced responses based on the configuration
-    const category = getResponseCategory(message);
-    const baseResponses = diegoResponses[category];
-    const baseResponse = baseResponses[Math.floor(Math.random() * baseResponses.length)];
-    
-    // Simulate AI enhancement based on model configuration
-    if (config.model.includes('gpt-4')) {
-      return `${baseResponse}\n\n💡 **Consejo avanzado**: Basándome en mi análisis con ${config.model}, te recomiendo también revisar la documentación relacionada y practicar con el simulador para reforzar este concepto.`;
-    } else if (config.model.includes('claude')) {
-      return `${baseResponse}\n\n🎯 **Análisis detallado**: Según los estándares ISO 9001:2015, este procedimiento requiere especial atención a la trazabilidad y documentación completa.`;
-    } else {
-      return `${baseResponse}\n\n🚀 **Tip personalizado**: Con tu modelo ${config.model}, puedo ayudarte con análisis más específicos si compartes más detalles sobre tu situación particular.`;
-    }
-  };
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

@@ -4,33 +4,28 @@ import { ModuleCard } from './ModuleCard';
 import { modules as staticModules } from '../data/modules';
 import { useAuth } from '../hooks/useAuth';
 import { useModules } from '../hooks/useModules';
+import { useProgress } from '../hooks/useProgress';
 
 export const ModulesView: React.FC = () => {
   const { user } = useAuth();
   const { modules } = useModules();
+  const { progress: userProgress, getProgress, updateProgress } = useProgress();
   const allModules = modules.length > 0 ? modules : staticModules;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
-  // Mock progress data
-  const userProgress = [
-    { userId: '2', moduleId: 'basic-transport', status: 'completed' as const, score: 92, timeSpent: 45, attempts: 1, completedAt: new Date('2024-12-15') },
-    { userId: '2', moduleId: 'direct-loads', status: 'completed' as const, score: 88, timeSpent: 58, attempts: 1, completedAt: new Date('2024-12-16') },
-    { userId: '2', moduleId: 'trucking-romper', status: 'in_progress' as const, score: undefined, timeSpent: 35, attempts: 1 },
-  ];
-
   const handleStartModule = (moduleId: string) => {
-    console.log('Starting module:', moduleId);
+    updateProgress(moduleId, { status: 'in_progress' });
   };
 
   const getModuleProgress = (moduleId: string) => {
-    return userProgress.find(p => p.moduleId === moduleId);
+    return getProgress(moduleId);
   };
 
   const isModuleDisabled = (module: any) => {
     if (!module.prerequisites?.length) return false;
-    return !module.prerequisites.every(prereq => 
+    return !module.prerequisites.every(prereq =>
       userProgress.some(p => p.moduleId === prereq && p.status === 'completed')
     );
   };

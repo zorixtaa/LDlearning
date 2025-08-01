@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Key, Settings, TestTube, CheckCircle, XCircle, AlertTriangle, Save, Eye, EyeOff } from 'lucide-react';
+import { Bot, TestTube, CheckCircle, XCircle, AlertTriangle, Save, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AIProvider {
@@ -101,6 +101,70 @@ Responde siempre en español, de manera clara y profesional, basándote en los e
     }
   }, []);
 
+  const fetchAIResponse = async (message: string, cfg: AIConfiguration): Promise<string> => {
+    try {
+      let url = '';
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      let body: Record<string, unknown> = {};
+
+      if (cfg.provider === 'openai') {
+        url = `${cfg.baseUrl}/chat/completions`;
+        headers['Authorization'] = `Bearer ${cfg.apiKey}`;
+        body = {
+          model: cfg.model,
+          messages: [
+            { role: 'system', content: cfg.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: cfg.temperature,
+          max_tokens: cfg.maxTokens
+        };
+      } else if (cfg.provider === 'anthropic') {
+        url = `${cfg.baseUrl}/messages`;
+        headers['x-api-key'] = cfg.apiKey;
+        body = {
+          model: cfg.model,
+          max_tokens: cfg.maxTokens,
+          messages: [{ role: 'user', content: `${cfg.systemPrompt}\n\n${message}` }],
+          temperature: cfg.temperature
+        };
+      } else if (cfg.provider === 'azure') {
+        url = `${cfg.baseUrl}/openai/deployments/${cfg.model}/chat/completions?api-version=2024-02-15-preview`;
+        headers['api-key'] = cfg.apiKey;
+        body = {
+          messages: [
+            { role: 'system', content: cfg.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: cfg.temperature,
+          max_tokens: cfg.maxTokens
+        };
+      } else {
+        url = `${cfg.baseUrl}/chat`;
+        if (cfg.apiKey) headers['Authorization'] = `Bearer ${cfg.apiKey}`;
+        body = {
+          model: cfg.model,
+          messages: [
+            { role: 'system', content: cfg.systemPrompt },
+            { role: 'user', content: message }
+          ],
+          temperature: cfg.temperature,
+          max_tokens: cfg.maxTokens
+        };
+      }
+
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+      const data = await res.json();
+      return (
+        data.choices?.[0]?.message?.content ||
+        data.content ||
+        ''
+      ).trim();
+    } catch {
+      return '';
+    }
+  };
+
   const handleSaveConfiguration = async () => {
     setIsSaving(true);
     try {
@@ -112,7 +176,7 @@ Responde siempre en español, de manera clara y profesional, basándote en los e
       
       setIsSaving(false);
       alert('Configuración guardada exitosamente');
-    } catch (error) {
+    } catch (_error) {
       setIsSaving(false);
       alert('Error al guardar la configuración');
     }
@@ -120,29 +184,21 @@ Responde siempre en español, de manera clara y profesional, basándote en los e
 
   const handleTestConnection = async () => {
     setTestResult({ status: 'testing' });
-    
+
     try {
-      // Simulate API test (in production, this would make a real API call)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
       if (!config.apiKey && aiProviders.find(p => p.id === config.provider)?.requiresApiKey) {
-        setTestResult({ 
-          status: 'error', 
-          message: 'API Key requerida para este proveedor' 
-        });
+        setTestResult({ status: 'error', message: 'API Key requerida para este proveedor' });
         return;
       }
-      
-      // Mock successful response
-      setTestResult({ 
-        status: 'success', 
-        message: 'Conexión exitosa. El tutor IA está listo para usar.' 
-      });
-    } catch (error) {
-      setTestResult({ 
-        status: 'error', 
-        message: 'Error de conexión. Verifica tu API Key y configuración.' 
-      });
+
+      const response = await fetchAIResponse('Hola', config);
+      if (response) {
+        setTestResult({ status: 'success', message: 'Conexión exitosa. El tutor IA está listo para usar.' });
+      } else {
+        setTestResult({ status: 'error', message: 'No se recibió respuesta del servicio' });
+      }
+    } catch (_error) {
+      setTestResult({ status: 'error', message: 'Error de conexión. Verifica tu API Key y configuración.' });
     }
   };
 
