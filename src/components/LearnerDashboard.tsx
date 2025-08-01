@@ -3,7 +3,7 @@ import { BookOpen, Award, Clock, TrendingUp, Target, Calendar } from 'lucide-rea
 import { ModuleCard } from './ModuleCard';
 import { modules } from '../data/modules';
 
-export const CandidateDashboard: React.FC = () => {
+export const LearnerDashboard: React.FC = () => {
   // Mock progress data
   const userProgress = [
     { userId: '2', moduleId: 'basic-transport', status: 'completed' as const, score: 92, timeSpent: 45, attempts: 1, completedAt: new Date('2024-12-15') },
