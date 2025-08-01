@@ -14,9 +14,11 @@ import { CertificateGenerator } from './components/CertificateGenerator';
 import { AIConfigurationPanel } from './components/AIConfigurationPanel';
 import { useAuth } from './hooks/useAuth';
 import { modules as staticModules } from './data/modules';
+import { useTheme } from './hooks/useTheme';
 import { useModules } from './hooks/useModules';
 
 const AppContent: React.FC = () => {
+  useTheme();
   const { user, isLoading } = useAuth();
   const { modules } = useModules();
   const allModules = modules.length > 0 ? modules : staticModules;
@@ -26,7 +28,7 @@ const AppContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
           <p className="text-gray-400">Cargando LÍNEA EDUCATRACK...</p>
@@ -70,7 +72,7 @@ const AppContent: React.FC = () => {
 
   if (showCertificate) {
     return (
-      <div className="min-h-screen bg-gray-900 p-4">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 text-gray-900 dark:text-gray-100">
         <CertificateGenerator
           certificate={showCertificate.certificate}
           module={showCertificate.module}
@@ -142,7 +144,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderContent()}

@@ -220,7 +220,7 @@ export const AITutor: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8, y: 100 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 100 }}
-            className={`fixed bottom-6 right-6 bg-gray-800 rounded-lg shadow-2xl border border-gray-700 z-50 ${
+            className={`fixed bottom-6 right-6 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 ${
               isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
             } transition-all duration-300`}
           >

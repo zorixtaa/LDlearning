@@ -84,16 +84,16 @@ export const CandidateDashboard: React.FC = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+            <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-2 rounded-lg ${stat.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-100 mb-1">{stat.value}</p>
-                <p className="text-sm font-medium text-gray-300 mb-1">{stat.title}</p>
-                <p className="text-xs text-gray-400">{stat.description}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{stat.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{stat.description}</p>
               </div>
             </div>
           );
@@ -102,10 +102,10 @@ export const CandidateDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Progress Chart */}
-        <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-100">Learning Progress</h2>
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Learning Progress</h2>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <TrendingUp className="h-4 w-4" />
               <span>2 modules ahead of schedule</span>
             </div>
@@ -120,8 +120,8 @@ export const CandidateDashboard: React.FC = () => {
               return (
                 <div key={module.id} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-100">{module.title}</span>
-                    <span className="text-sm text-gray-400">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{module.title}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {progress?.score ? `${progress.score}%` : `${percentage}%`}
                     </span>
                   </div>
@@ -141,15 +141,15 @@ export const CandidateDashboard: React.FC = () => {
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-6">
-            <Calendar className="h-5 w-5 text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-100">Upcoming Deadlines</h2>
+            <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Upcoming Deadlines</h2>
           </div>
           
           <div className="space-y-4">
             {upcomingDeadlines.map((item, index) => (
-              <div key={index} className="p-3 border border-gray-700 rounded-lg">
+              <div key={index} className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     item.priority === 'high' ? 'bg-red-100 text-red-800' :
@@ -160,7 +160,7 @@ export const CandidateDashboard: React.FC = () => {
                   </span>
                   <span className="text-xs text-gray-500">{item.deadline}</span>
                 </div>
-                <p className="text-sm font-medium text-gray-100">{item.module}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.module}</p>
               </div>
             ))}
           </div>
@@ -170,7 +170,7 @@ export const CandidateDashboard: React.FC = () => {
       {/* Current Modules */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-100">Available Modules</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Available Modules</h2>
           <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
             View All Modules
           </button>

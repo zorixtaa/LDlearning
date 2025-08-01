@@ -16,8 +16,8 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
   disabled = false 
 }) => {
   const getStatusColor = () => {
-    if (disabled) return 'bg-gray-800 border-gray-700';
-    if (!progress) return 'bg-gray-800 border-gray-700 hover:border-blue-500';
+    if (disabled) return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
+    if (!progress) return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-500';
     
     switch (progress.status) {
       case 'completed':
@@ -27,12 +27,12 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
       case 'failed':
         return 'bg-red-900/30 border-red-700';
       default:
-        return 'bg-gray-800 border-gray-700 hover:border-blue-500';
+        return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-500';
     }
   };
 
   const getStatusIcon = () => {
-    if (disabled) return <Lock className="h-5 w-5 text-gray-400" />;
+    if (disabled) return <Lock className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
     if (!progress) return <PlayCircle className="h-5 w-5 text-blue-500" />;
     
     switch (progress.status) {
@@ -64,8 +64,8 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
     <div className={`rounded-xl border-2 p-6 transition-all duration-200 ${getStatusColor()} ${!disabled ? 'hover:shadow-lg cursor-pointer' : 'cursor-not-allowed'}`}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-100 mb-2">{module.title}</h3>
-          <p className="text-sm text-gray-400 line-clamp-2">{module.description}</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{module.title}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{module.description}</p>
         </div>
         <div className="ml-4">
           {getStatusIcon()}
@@ -84,7 +84,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         )}
       </div>
 
-      <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
         <div className="flex items-center gap-1">
           <Clock className="h-4 w-4" />
           <span>{module.duration} min</span>
@@ -92,7 +92,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         {progress && (
           <div className="flex items-center gap-2">
             {progress.score && (
-              <span className="font-medium text-gray-300">Score: {progress.score}%</span>
+              <span className="font-medium text-gray-600 dark:text-gray-300">Score: {progress.score}%</span>
             )}
             <span>Attempts: {progress.attempts}</span>
           </div>
@@ -100,15 +100,15 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
       </div>
 
       <div className="space-y-2 mb-4">
-        <h4 className="text-xs font-medium text-gray-300 uppercase tracking-wide">Topics Covered</h4>
+        <h4 className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Topics Covered</h4>
         <div className="flex flex-wrap gap-1">
           {module.topics.slice(0, 3).map((topic, index) => (
-            <span key={index} className="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">
+            <span key={index} className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
               {topic}
             </span>
           ))}
           {module.topics.length > 3 && (
-            <span className="px-2 py-1 bg-gray-700 text-xs text-gray-300 rounded">
+            <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded">
               +{module.topics.length - 3} more
             </span>
           )}
@@ -120,7 +120,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
         disabled={disabled}
         className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
           disabled
-            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+            ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
             : progress?.status === 'completed'
             ? 'bg-green-600 hover:bg-green-700 text-white'
             : 'bg-blue-600 hover:bg-blue-700 text-white'
